@@ -1,8 +1,9 @@
 <div class="article article-main">
   <h1>
     <a href="/article/${article.name}">${article.title}</a>
-    {{html content}}        
   </h1>
+  
+  {{html content}}
   
   <div id="disqus_thread">
     <script>
@@ -14,6 +15,7 @@
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
       })();
     </script>
+    
     <a href="http://disqus.com">blog comments powered by <span class="logo-disqus">Disqus</span></a>
   </div>
 </div>
@@ -29,7 +31,7 @@
     {{if author.github}}
       <dl>
         <dt>Github</dt>
-        <dd>${author.name}</dd>
+        <dd>${author.github}</dd>
       </dl>
     {{/if}}
     
@@ -97,80 +99,10 @@
           <ul>
             {{each(version, stat) article.log}}
               <li title="${stat.message}"></li>
-                <a href="/${version}/category/${value}">${$value}</a>
+                <a href="/${version}/${article.name}">${stat.date}</a>
             {{/each}}
           </ul>
         </dd>
       </dl>
     {{/if}}
-    
-    {{each(i, name) names}}
-    <div>${i}.${name}</div>
-{{/each}} 
-    
-    %dl
-      %dt
-        Revisions
-      %dd
-        %ul
-          :each version, stat in article.log
-            %li{title: stat.message}
-              %a{ href: "/#{version}/article/#{article.name}"}
-                &= new Date(stat.date).toUTCString()
-          
-  </div>
 </div>
-
-  .aside
-    %h4
-      About this Article
-    :if article.date
-      %dl{title: article.date}
-        %dt
-          Date Released
-        %dd
-          &= formatDate(article.date, "%l %F %j, %Y")
-    :if article.lastUpdated
-      %dl{title: article.lastUpdated}
-        %dt
-          Last Updated
-        %dd
-          &= formatDate(article.lastUpdated, "%l %F %j, %Y")
-
-    :if article.categories
-      %dl
-        %dt Tags
-          %dd
-            :each category in article.categories
-              %a{href: "/category/" + category}&=unescape(category) 
-              
-    :if article.node
-      %dl
-        %dt
-          Node Version
-        %dd
-          %a{ href: "http://github.com/ry/node/tree/" + article.node }
-            node #{article.node}
-
-    %dl
-      %dt
-        Revisions
-      %dd
-        %ul
-          :each version, stat in article.log
-            %li{title: stat.message}
-              %a{ href: "/#{version}/article/#{article.name}"}
-                &= new Date(stat.date).toUTCString()
-
-  :if article.related && article.related.length > 0
-    .bubble
-      %h4
-        Other Articles by this Author
-      %ul
-        :each related in article.related
-          %li
-            %a{href: "/article/" + related.name}&=related.title
-            :if related.node
-              %span.versiontag&= related.node
-
-  .bubble= markdownEncode(description)
