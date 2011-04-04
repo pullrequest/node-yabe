@@ -1,0 +1,176 @@
+<div class="article article-main">
+  <h1>
+    <a href="/article/${article.name}">${article.title}</a>
+    {{html content}}        
+  </h1>
+  
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'blogmklog';
+      var disqus_identifier = 'http://blog.mklog.fr/article/#{article.name}';
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <a href="http://disqus.com">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+  </div>
+</div>
+
+<div class="article article-sidebar">
+  <div class="aside">
+    <h4>About the Author</h4>
+    <dl>
+      <dt>Name</dt>
+      <dd>${author.name}</dd>
+    </dl>
+    
+    {{if author.github}}
+      <dl>
+        <dt>Github</dt>
+        <dd>${author.name}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if author.bitbucket}}
+      <dl>
+        <dt>BitBucket</dt>
+        <dd>${author.bitbucket}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if author.twitter}}
+      <dl>
+        <dt>Twitter</dt>
+        <dd>${author.twitter}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if author.location}}
+      <dl>
+        <dt>Location</dt>
+        <dd>${author.location}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if author.twitter}}
+      <dl>
+        <dt>Links</dt>
+        <dd>${author.homepage}</dd>
+      </dl>
+    {{/if}}
+  </div>
+  
+  <div class="aside">
+    <h4>About this article</h4>
+    
+    {{if article.date}}
+      <dl>
+        <dt>Date Released</dt>
+        <dd>${article.date}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if article.lastUpdated}}
+      <dl>
+        <dt>Last Updated</dt>
+        <dd>${article.lastUpdated}</dd>
+      </dl>
+    {{/if}}
+    
+    {{if article.categories}}
+      <dl>
+        <dt>Tags</dt>
+        <dd>
+          {{each article.categories}}
+              <a href="/category/${value}">${$value}</a>
+          {{/each}}
+        </dd>
+      </dl>
+    {{/if}}
+    
+    {{if article.log}}
+      <dl>
+        <dt>Revisions</dt>
+        <dd>
+          <ul>
+            {{each(version, stat) article.log}}
+              <li title="${stat.message}"></li>
+                <a href="/${version}/category/${value}">${$value}</a>
+            {{/each}}
+          </ul>
+        </dd>
+      </dl>
+    {{/if}}
+    
+    {{each(i, name) names}}
+    <div>${i}.${name}</div>
+{{/each}} 
+    
+    %dl
+      %dt
+        Revisions
+      %dd
+        %ul
+          :each version, stat in article.log
+            %li{title: stat.message}
+              %a{ href: "/#{version}/article/#{article.name}"}
+                &= new Date(stat.date).toUTCString()
+          
+  </div>
+</div>
+
+  .aside
+    %h4
+      About this Article
+    :if article.date
+      %dl{title: article.date}
+        %dt
+          Date Released
+        %dd
+          &= formatDate(article.date, "%l %F %j, %Y")
+    :if article.lastUpdated
+      %dl{title: article.lastUpdated}
+        %dt
+          Last Updated
+        %dd
+          &= formatDate(article.lastUpdated, "%l %F %j, %Y")
+
+    :if article.categories
+      %dl
+        %dt Tags
+          %dd
+            :each category in article.categories
+              %a{href: "/category/" + category}&=unescape(category) 
+              
+    :if article.node
+      %dl
+        %dt
+          Node Version
+        %dd
+          %a{ href: "http://github.com/ry/node/tree/" + article.node }
+            node #{article.node}
+
+    %dl
+      %dt
+        Revisions
+      %dd
+        %ul
+          :each version, stat in article.log
+            %li{title: stat.message}
+              %a{ href: "/#{version}/article/#{article.name}"}
+                &= new Date(stat.date).toUTCString()
+
+  :if article.related && article.related.length > 0
+    .bubble
+      %h4
+        Other Articles by this Author
+      %ul
+        :each related in article.related
+          %li
+            %a{href: "/article/" + related.name}&=related.title
+            :if related.node
+              %span.versiontag&= related.node
+
+  .bubble= markdownEncode(description)

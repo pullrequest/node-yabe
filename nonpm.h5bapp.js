@@ -15,7 +15,7 @@
 var mime = require('./lib/mime'),
 connect = require('./lib/connect'),
 inspect = require('util').inspect,
-renderer = require('./renderer');
+renderer = require('./renderer')();
 
 // define early so that connect sees them
 mime.define({
