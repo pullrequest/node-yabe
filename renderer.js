@@ -20,8 +20,8 @@ res.render = function(target, data, force) {
   // with feeds, the ' escape made it non valid feed.
   layout = layout.replace(/&#39/g, "'");
   
-  this.writeHead(200, { 
-      'Content-Type': target === "feed.xml" ? 'application/rss+xml' : 'text/html',
+  this.writeHead(200, {
+      'Content-Type': /\.xml/.test(target) ? 'application/rss+xml' : 'text/html',
       'Content-Length': layout.length
   });
   
@@ -33,16 +33,18 @@ var Renderers = module.exports = (function(o) {
     
     // Cache templates on application startup
     var parseProps = function(markdown) {
-      var props = { };
+      var props = {},
+      match = [];
 
       // Parse out headers
-      var match;
-      while(match = markdown.match(/^([a-z]+):\s*(.*)\s*\n/i)) {
+      while( (match = markdown.match(/^([a-z]+):\s*(.*)\s*\n/i)) ) {
         var name = match[1].toLowerCase(),
             value = match[2];
+            
         markdown = markdown.substr(match[0].length);
         props[name] = value;
       }
+      
       props.markdown = markdown;
 
       if(props.categories !== undefined) {
@@ -75,8 +77,8 @@ var Renderers = module.exports = (function(o) {
               return (Date.parse(b.date)) - (Date.parse(a.date));
             });
             
-            if(cb ){
-                return cb(articles);
+            if(cb){
+              return cb(articles);
             }
             
             res.render('index', {
@@ -86,7 +88,13 @@ var Renderers = module.exports = (function(o) {
           
           fs.readdir(__dirname + '/articles/', function(err, results) {
             var files = [],
-            articles = [];
+            articles = [],
+            ln;
+            
+            if(err || !results) {
+              return next(err);
+            }
+            
           
             results.forEach(function(filename, i) {
               if (!(/\.markdown$/.test(filename))) {
