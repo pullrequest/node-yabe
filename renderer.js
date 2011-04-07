@@ -5,10 +5,10 @@ prettify = require('./lib/prettify'),
 QueryString = require('querystring'),
 res = require('http').ServerResponse.prototype;
 
-res.render = function(target, data) {
+res.render = function(target, data, force) {
   
   var partial = jqtpl.tmpl('tmpl.' + target, data),
-  layout = jqtpl.tmpl('tmpl.layout', {content: partial});
+  layout = !force ? jqtpl.tmpl('tmpl.layout', {content: partial}) : partial;
   
   // prettify snippets of code
   layout = layout.replace(/<pre><code>[^<]+<\/code><\/pre>/g, function (code) {
@@ -17,9 +17,12 @@ res.render = function(target, data) {
     return "<pre><code>" + code + "</code></pre>";
   });
   
+  // with feeds, the ' escape made it non valid feed.
+  layout = layout.replace(/&#39/g, "'");
+  
   this.writeHead(200, { 
-      'content-type': 'text/html',
-      'content-length': layout.length
+      'Content-Type': target === "feed.xml" ? 'application/rss+xml' : 'text/html',
+      'Content-Length': layout.length
   });
   
   this.end(layout);
@@ -42,19 +45,19 @@ var Renderers = module.exports = (function(o) {
       }
       props.markdown = markdown;
 
-      if(props.categories !== undefined){
+      if(props.categories !== undefined) {
         props.categories = props.categories.split(',').map(function(element){ 
           return QueryString.escape(element.trim());
         });
       }
-
+      
       return props;
     },
     
     addTemplate = function(file) {
-        fs.readFile(__dirname + '/themes/default/' + file + '.html', 'utf8', function(err, tmpl) {
+        var filename = /\./.test(file) ? file : file + '.html'; 
+        fs.readFile(__dirname + '/themes/default/' + filename, 'utf8', function(err, tmpl) {
             if (err) throw err;
-            
             jqtpl.template('tmpl.' + file, tmpl);
         });   
     };
@@ -62,14 +65,19 @@ var Renderers = module.exports = (function(o) {
     addTemplate('layout');
     addTemplate('article');
     addTemplate('index');
+    addTemplate('feed.xml');
     
     return {
-        index: function(req, res, next) {
-          
+        index: function(req, res, next, cb) {
+        
           var render = function(articles) {
             articles.sort(function(a, b) {
               return (Date.parse(b.date)) - (Date.parse(a.date));
             });
+            
+            if(cb ){
+                return cb(articles);
+            }
             
             res.render('index', {
               articles: articles
@@ -106,17 +114,14 @@ var Renderers = module.exports = (function(o) {
                 props = parseProps(markdown);
                 props.name = filename.replace('.markdown', '');
                 props.markdown = Markdown.encode(props.markdown.substr(0, props.markdown.indexOf("##")));
-                
+            
                 articles.push(props);
                 
                 if(i === ln) {
                   render(articles);
                 }
               });
-
             });
-
-            
           });
         },
         
@@ -139,6 +144,10 @@ var Renderers = module.exports = (function(o) {
             });
         },
         
-        feed: function(){}
+        feed: function(req, res, next){
+            return this.index(req, res, next, function(articles) {
+                res.render('feed.xml', {articles: articles}, true);
+            });
+        }
     };
 });

@@ -46,9 +46,6 @@ var routes = function(app) {
     // article
     addRoute('/article/:post', renderer.article);
 
-    // article revisions
-    addRoute(/^\/([a-f0-9]{40})\/([a-z0-9_\-]+)\/?$/, renderer.article);
-
     // this must be the last route, its an addition to the static provider
     app.get(':reqPath', function(req, res, next) {
         var reqPath = req.params.reqPath;
