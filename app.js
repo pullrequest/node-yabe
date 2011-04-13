@@ -94,7 +94,7 @@ var server = connect.createServer(
   // set to ./ to find the boilerplate files
   // change if you have an htdocs dir or similar
   // maxAge is set to one month
-  connect.static(__dirname + '/themes/default/public/', {maxAge: oneMonth})
+  connect.static(__dirname + '/themes/pullrequest/public/', {maxAge: oneMonth})
 );
 
 // bind the server to a port, choose your port:

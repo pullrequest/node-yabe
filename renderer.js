@@ -58,7 +58,7 @@ var Renderers = module.exports = (function(o) {
     
     addTemplate = function(file) {
         var filename = /\./.test(file) ? file : file + '.html'; 
-        fs.readFile(__dirname + '/themes/default/' + filename, 'utf8', function(err, tmpl) {
+        fs.readFile(__dirname + '/themes/pullrequest/' + filename, 'utf8', function(err, tmpl) {
             if (err) throw err;
             jqtpl.template('tmpl.' + file, tmpl);
         });   
