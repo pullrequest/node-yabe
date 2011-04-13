@@ -1,3 +1,6 @@
 [submodule "articles"]
 	path = articles
 	url = http://github.com/pullrequest/pullrequest.org.git
+[submodule "themes/pullrequest"]
+	path = themes/pullrequest
+	url = http://github.com/pullrequest/pullrequest-theme.git
