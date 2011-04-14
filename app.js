@@ -1,10 +1,8 @@
 var mime = require('mime'),
 connect = require('connect'),
 inspect = require('util').inspect,
-renderer = require('./renderer')({
-  theme: 'default',
-  themeDir: 'themes'
-});
+config = require('./config'),
+renderer = require('./lib/renderer')(config);
 
 // define early so that connect sees them
 mime.define({
@@ -97,7 +95,7 @@ var server = connect.createServer(
   // set to ./ to find the boilerplate files
   // change if you have an htdocs dir or similar
   // maxAge is set to one month
-  connect.static(__dirname + '/themes/default/public/', {maxAge: oneMonth})
+  connect.static([__dirname, config.themeDir, config.theme, 'public'].join('/'), {maxAge: oneMonth})
 );
 
 // bind the server to a port, choose your port:
