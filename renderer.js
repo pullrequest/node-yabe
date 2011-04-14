@@ -1,7 +1,7 @@
 var fs = require('fs'),
-jqtpl = require('./lib/node-jqtpl'),
-Markdown = require('./lib/markdown'),
-prettify = require('./lib/prettify'),
+jqtpl = require('node-jqtpl'),
+Markdown = require('markdown'),
+prettify = require('prettify'),
 QueryString = require('querystring'),
 res = require('http').ServerResponse.prototype;
 

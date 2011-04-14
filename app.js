@@ -1,5 +1,5 @@
-var mime = require('./lib/mime'),
-connect = require('./lib/connect'),
+var mime = require('mime'),
+connect = require('connect'),
 inspect = require('util').inspect,
 renderer = require('./renderer')();
 
