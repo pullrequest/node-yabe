@@ -15,7 +15,7 @@ mime.define({
 
 var routes = function(app) {
 
-    var curryRoute = function(route) {
+    var defaultHandler = function(route) {
         return function(req, res, next) {
             console.log('Matching route ', route, ' for ', req.url);
             console.log('params: ', req.params);
@@ -24,7 +24,7 @@ var routes = function(app) {
     },
 
     addRoute = function(route, r) {
-        r = r || curryRoute(route);
+        r = r || defaultHandler(route);
         app.get(route, proxy(r, renderer));
     },
 
