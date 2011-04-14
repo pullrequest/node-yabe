@@ -5,31 +5,32 @@ prettify = require('prettify'),
 QueryString = require('querystring'),
 res = require('http').ServerResponse.prototype;
 
-res.render = function(target, data, force) {
-  
-  var partial = jqtpl.tmpl('tmpl.' + target, data),
-  layout = !force ? jqtpl.tmpl('tmpl.layout', {content: partial}) : partial;
-  
-  // prettify snippets of code
-  layout = layout.replace(/<pre><code>[^<]+<\/code><\/pre>/g, function (code) {
-    code = code.match(/<code>([\s\S]+)<\/code>/)[1];
-    code = prettify.prettyPrintOne(code);
-    return "<pre><code>" + code + "</code></pre>";
-  });
-  
-  // with feeds, the ' escape made it non valid feed.
-  layout = layout.replace(/&#39/g, "'");
-  
-  this.writeHead(200, {
-      'Content-Type': /\.xml/.test(target) ? 'application/rss+xml' : 'text/html',
-      'Content-Length': layout.length
-  });
-  
-  this.end(layout);
-};
 
+Object.defineProperty(res, 'render', {
+  value: function(target, data, force) {
+    var partial = jqtpl.tmpl('tmpl.' + target, data),
+    layout = !force ? jqtpl.tmpl('tmpl.layout', {content: partial}) : partial;
+  
+    // prettify snippets of code
+    layout = layout.replace(/<pre><code>[^<]+<\/code><\/pre>/g, function (code) {
+      code = code.match(/<code>([\s\S]+)<\/code>/)[1];
+      code = prettify.prettyPrintOne(code);
+      return "<pre><code>" + code + "</code></pre>";
+    });
+  
+    // with feeds, the ' escape made it non valid feed.
+    layout = layout.replace(/&#39/g, "'");
+  
+    this.writeHead(200, {
+        'Content-Type': /\.xml/.test(target) ? 'application/rss+xml' : 'text/html',
+        'Content-Length': layout.length
+    });
+  
+    this.end(layout);
+  }
+});
 
-var Renderers = module.exports = (function(o) {
+var Renderers = (function() {
     
     // Cache templates on application startup
     var parseProps = function(markdown) {
@@ -70,6 +71,13 @@ var Renderers = module.exports = (function(o) {
     addTemplate('feed.xml');
     
     return {
+        options: {},
+        
+        init: function(o) {
+          this.options = o;
+          return this;
+        },
+        
         index: function(req, res, next, cb) {
         
           var render = function(articles) {
@@ -158,4 +166,10 @@ var Renderers = module.exports = (function(o) {
             });
         }
     };
-});
+})();
+
+
+// expose the Renderer Object via this factory
+module.exports = function rendererFactory(o) {
+  return Object.create(Renderers).init(o);
+};

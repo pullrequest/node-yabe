@@ -1,7 +1,10 @@
 var mime = require('mime'),
 connect = require('connect'),
 inspect = require('util').inspect,
-renderer = require('./renderer')();
+renderer = require('./renderer')({
+  theme: 'default',
+  themeDir: 'themes'
+});
 
 // define early so that connect sees them
 mime.define({
