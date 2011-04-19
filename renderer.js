@@ -165,7 +165,7 @@ var Renderers = module.exports = (function(o) {
                 res.render('article', {
                   article: props,
                   author: {name: props.author},
-                  content: Markdown.encode(body)
+                  content: Markdown.encode(props.markdown)
                 });
             });
         },
