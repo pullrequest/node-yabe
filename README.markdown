@@ -1,8 +1,13 @@
 # Node Yabe
 
-A simple (but yet another) blog engine written in node.js. It basically takes the `àrticles/` folder full of markdown post and serves them as a website.
+A simple (but yet another) blog engine written in node.js. It basically takes the `articles/` folder full of markdown post and serves them as a website.
 
-npm is not used yet, the dependencies are built-in in this repo.
+npm is not used yet, the dependencies are built-in in this repo, except for datejs;
+
+In order to use it:
+* clone it
+* $> git submodule update --init --recursive
+* $> npm install datejs
 
 connect as a middleware stack (namely for router). nodejs v0.4.x
 
