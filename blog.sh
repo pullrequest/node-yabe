@@ -1,2 +1,2 @@
 #!/bin/sh
-nohup node app.js $1 >&1 &
+nohup node app.js $1 > /dev/null &
