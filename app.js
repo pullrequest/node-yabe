@@ -1,6 +1,7 @@
 var mime = require('./lib/mime'),
 connect = require('./lib/connect'),
 inspect = require('util').inspect,
+cluster = require('cluster'),
 renderer = require('./renderer')();
 
 // define early so that connect sees them
@@ -62,7 +63,7 @@ var routes = function(app) {
 
         // control cross domain if you want
         // req.header.host will be the host of the incoming request
-        var hostAddress = "example.com",
+        var hostAddress = "pullrequest.org",
         reqHost = req.headers.host;
 
         // allow cross domain (for your subdomains)
@@ -98,7 +99,14 @@ var server = connect.createServer(
 );
 
 // bind the server to a port, choose your port:
-server.listen(3001);
+cluster(server)
+	.use(cluster.pidfiles())
+    .use(cluster.cli())
+    .use(cluster.reload(['lib','themes','app.js','renderer.js']))
+    .use(cluster.logger('/var/log/pullrequest', 'debug'))
+    .use(cluster.reload())
+    .listen(8000);
+    
 // 80 is the default web port and 443 for TLS
 // Your server is running :-)
 console.log('Node server is running!');
