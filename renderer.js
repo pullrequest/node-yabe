@@ -19,10 +19,13 @@ res.render = function(target, data, force) {
   
   // with feeds, the ' escape made it non valid feed.
   layout = layout.replace(/&#39/g, "'");
+  console.log(layout.substring(layout.length-20,layout.length));
   
   this.writeHead(200, {
       'Content-Type': /\.xml/.test(target) ? 'application/rss+xml' : 'text/html',
-      'Content-Length': layout.length
+      
+      // problem with content-lenght? -> switch back to Transfer-Encoding:chunked
+      //'Content-Length': layout.length
   });
   
   this.end(layout);
