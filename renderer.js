@@ -22,7 +22,9 @@ res.render = function(target, data, force) {
   
   this.writeHead(200, {
       'Content-Type': /\.xml/.test(target) ? 'application/rss+xml' : 'text/html',
-      'Content-Length': layout.length
+      
+      // problem with content-lenght? -> switch back to Transfer-Encoding:chunked
+      //'Content-Length': layout.length
   });
   
   this.end(layout);
