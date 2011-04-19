@@ -2,6 +2,7 @@ var mime = require('./lib/mime'),
 connect = require('./lib/connect'),
 inspect = require('util').inspect,
 cluster = require('cluster'),
+fs = require('fs'),
 renderer = require('./renderer')();
 
 // define early so that connect sees them
@@ -98,12 +99,21 @@ var server = connect.createServer(
   connect.static(__dirname + '/themes/pullrequest/public/', {maxAge: oneMonth})
 );
 
+var log_path = '/var/log/pullrequest';
+
+try {
+	fs.mkdirSync(log_path, 755);
+} catch (e) {
+	if(e.code !== 'EEXIST')
+		console.warn("Could not create " + log_path );
+}
+
 // bind the server to a port, choose your port:
 cluster(server)
 	.use(cluster.pidfiles())
     .use(cluster.cli())
     .use(cluster.reload(['lib','themes','app.js','renderer.js']))
-    .use(cluster.logger('/var/log/pullrequest', 'debug'))
+    .use(cluster.logger( log_path,'debug'))
     .use(cluster.reload())
     .listen(8000);
     

@@ -32,7 +32,7 @@ res.render = function(target, data, force) {
 var Renderers = module.exports = (function(o) {
     
     // Cache templates on application startup
-    var parseProps = function(markdown) {
+    function parseProps (markdown) {
       var props = {},
       match = [];
 
@@ -54,20 +54,31 @@ var Renderers = module.exports = (function(o) {
       }
       
       return props;
-    },
+    };
     
-    addTemplate = function(file) {
+    function addTemplate (file) {
         var filename = /\./.test(file) ? file : file + '.html'; 
         fs.readFile(__dirname + '/themes/pullrequest/' + filename, 'utf8', function(err, tmpl) {
             if (err) throw err;
             jqtpl.template('tmpl.' + file, tmpl);
         });   
     };
+    //specifically for french dates!
+    //ToDo use a lib in order to manage it globally
+    function parseDate (date) {
+    	if (typeof date === "string")
+    		date = Date(date);
+    	else if (typeof date !== "object" && ! (date instanceof Date))
+    		throw "Invalid date: you need either an object or a regular dateString ( IETF-compliant RFC 1123 timestamps )";
+    	return date.getDate()+"/"+date.getMonth()+"/"+date.getFullYear()+" - "+
+    			date.getHours()+"h"+(date.getMinutes()>9?(date.getMinutes()===0?'00':''):'0'+date.getMinutes());
+    };
     
     addTemplate('layout');
     addTemplate('article');
     addTemplate('index');
     addTemplate('feed.xml');
+    
     
     return {
         index: function(req, res, next, cb) {
@@ -122,7 +133,9 @@ var Renderers = module.exports = (function(o) {
                 props = parseProps(markdown);
                 props.name = filename.replace('.markdown', '');
                 props.markdown = Markdown.encode(props.markdown.substr(0, props.markdown.indexOf("##")));
-            
+            	//pretty date
+                props.parsedDate = parseDate(new Date(props.date));
+                
                 articles.push(props);
                 
                 if(i === ln) {
@@ -144,6 +157,9 @@ var Renderers = module.exports = (function(o) {
                 
                 props = parseProps(body);
                 props.name = req.params.post;
+                //pretty date
+                props.parsedDate = parseDate(new Date(props.date));
+                
                 res.render('article', {
                   article: props,
                   author: {name: props.author},
