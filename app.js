@@ -48,30 +48,30 @@ var routes = function(app) {
     addRoute('/article/:post', renderer.article);
 
     // this must be the last route, its an addition to the static provider
-    app.get(':reqPath', function(req, res, next) {
-        var reqPath = req.params.reqPath;
-        // connect populates this
-        // use this header for html files, or add it as a meta tag
-        // to save header bytes serve it only to IE
-        if (req.headers.user - agent.indexOf('MSIE') &&
-        reqPath.match(/\.html$/) || reqPath.match(/\.htm$/))
-        res.setHeader('X-UA-Compatible', "IE=Edge,chrome=1");
+    app.get('*', function(req, res, next) {
+        var reqPath = req.url,
+        userAgent = req.headers['user-agent'],
+        reqHost = req.headers.host;
+        
+        if (userAgent && userAgent.indexOf('MSIE') && reqPath.match(/\.html$/) || reqPath.match(/\.htm$/)) {
+          // use this header for html files, or add it as a meta tag
+          // to save header bytes serve it only to IE
+          res.setHeader('X-UA-Compatible', "IE=Edge,chrome=1"); 
+        }
 
         // protect .files
-        if (reqPath.match(/(^|\/)\./))
-        res.end("Not allowed");
-
-        // control cross domain if you want
-        // req.header.host will be the host of the incoming request
-        var hostAddress = "example.com",
-        reqHost = req.headers.host;
+        if (reqPath.match(/(^|\/)\./)) {
+          console.log('wtf "Not allowed"');
+          res.end("Not allowed"); 
+        }
 
         // allow cross domain (for your subdomains)
         // disallow other domains.
         // you can get really specific by adding the file
         // type extensions you want to allow to the if statement
-        if (reqHost.indexOf(hostAddress) === -1)
-        res.end("Cross-domain is not allowed");
+        if (reqHost && reqHost.match(config.hostAddress)) {
+          res.end("Cross-domain is not allowed"); 
+        }
 
         next();
         // let the static server do the rest

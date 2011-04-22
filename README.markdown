@@ -49,7 +49,16 @@ a custom sidebar file allows you to define a custom placeholder that you can lat
 `config.js` file acts as a really basic configuration hook. It should expose a simple hash object:
 
     module.exports = {
+      // control cross domain if you want. allow cross domain (for your subdomains) disallow other domains.
+      hostAdress: 'localhost',
+
+      // server port
+      port: 3001,
+
+      // themes folder path
       themeDir: 'themes',
+
+      // theme folder name
       theme: 'testr'
     };
 
