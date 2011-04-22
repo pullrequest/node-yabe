@@ -61,16 +61,15 @@ var routes = function(app) {
 
         // protect .files
         if (reqPath.match(/(^|\/)\./)) {
-          console.log('wtf "Not allowed"');
-          res.end("Not allowed"); 
+          return res.end("Not allowed"); 
         }
 
         // allow cross domain (for your subdomains)
         // disallow other domains.
         // you can get really specific by adding the file
         // type extensions you want to allow to the if statement
-        if (reqHost && reqHost.match(config.hostAddress)) {
-          res.end("Cross-domain is not allowed"); 
+        if (reqHost && !reqHost.match(config.hostAddress)) {
+          return res.end("Cross-domain is not allowed"); 
         }
 
         next();
@@ -99,8 +98,15 @@ var server = connect.createServer(
 );
 
 // bind the server to a port, choose your port:
-server.listen(3001);
+server.listen(config.port);
 // 80 is the default web port and 443 for TLS
 // Your server is running :-)
-console.log('Node server is running!');
+console.log('Node server is running! and listening on ', config.port);
+
+// this is a failsafe, it will catch the error silently and logged it the console
+// while this works, you should really try to catch the errors with a try/catch block
+// more on this here: http://nodejs.org/docs/v0.4.3/api/process.html#event_uncaughtException_
+process.on('uncaughtException', function (err) {
+   console.log('Caught exception: ' + err);
+});
 
