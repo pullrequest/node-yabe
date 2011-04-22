@@ -161,7 +161,7 @@ var Renderers = module.exports = (function(o) {
                 props.name = req.params.post;
                 //pretty date
                 props.parsedDate = parseDate(new Date(props.date));
-                
+                props.parsedLastUpdated = parseDate( new Date(props.lastUpdated));
                 res.render('article', {
                   article: props,
                   author: {name: props.author},

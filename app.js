@@ -112,7 +112,7 @@ try {
 cluster(server)
 	.use(cluster.pidfiles())
     .use(cluster.cli())
-    .use(cluster.reload(['lib','articles','themes','app.js','renderer.js']))
+    .use(cluster.reload(['lib','articles','themes','app.js','renderer.js'], { extensions: ['.js', '.html', '.markdown']}))
     .use(cluster.logger( log_path,'debug'))
     .use(cluster.reload())
     .listen(8000);
