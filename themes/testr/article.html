@@ -1,0 +1,30 @@
+<div class="article-wrap{{if has_sidebar}} has-sidebar{{/if}} clearfix">
+  <div class="article article-main">
+    <h1>
+      <a href="/article/${article.name}">${article.title}</a>
+    </h1>
+  
+    {{html content}}
+  
+    <div id="disqus_thread">
+      <script>
+        var disqus_shortname = 'blogmklog';
+        var disqus_identifier = 'http://blog.mklog.fr/article/#{article.name}';
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+    
+      <a href="http://disqus.com">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+  </div>
+
+
+  {{if has_sidebar}}
+  <div class="article-sidebar">
+    {{html sidebar}}
+  </div>
+  {{/if}}
+</div>
