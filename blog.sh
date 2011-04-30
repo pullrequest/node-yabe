@@ -1,5 +1,5 @@
 #!/bin/sh
-nohup node app.js $1 > /dev/null &
+nohup node server.js $1 > /dev/null &
 
 if [ "$1" = "stop" ]
 then
